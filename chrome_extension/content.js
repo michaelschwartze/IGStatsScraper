@@ -32,10 +32,6 @@ function convertTimeToSeconds(timeStr) {
   
     return totalSeconds;
   }
-
-  function arrayToString(arr) {
-    return arr.map(subArr => `[${subArr.join(',')}]`).join(',');
-  }
   
   function findMetrics() {
     const metrics = [];
@@ -94,10 +90,31 @@ function convertTimeToSeconds(timeStr) {
       }
     }
 
+    // Find and process the Post Date metric
+    // const allTextSpans = document.querySelectorAll('span[data-bloks-name="bk.components.Text"]');
+    for (let span of allTextSpans) {
+      if (span.textContent.includes("Duration")) {
+        const durationText = span.textContent;
+        let searchString = " · Duration";
+        let index = durationText.indexOf(searchString);
+        let dateString = durationText.substring(0,index);
+        metrics.push(["Post Date", dateString]);
+        break;
+      }
+    }   
+
     // Add the Reel URL to the array
     metrics.push(["Reel URL", window.location.href ])
 
-    const resultString = arrayToString(metrics);
+    function arrayToObj(arr) {
+      return arr.reduce((obj, [key, value]) => {
+        obj[key] = value;
+        return obj;
+      }, {});
+      
+    }
+
+    const resultString = arrayToObj(metrics);
 
     console.log(resultString);
 
