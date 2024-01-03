@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Your Extension Name",
+  "version": "1.0",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png"
+    }
+  },
+  "permissions": [
+    "scripting", "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://*.instagram.com/reel/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "16": "icon16.png"
+  }
+}
