@@ -7,9 +7,9 @@ document.getElementById('execute-script').addEventListener('click', async () => 
     });
   });
   
-  function pageScript() {
-    // Your code to execute on the page goes here
-    let myJsonData = findMetrics();
-    generateTable(myJsonData)
-  }
+function pageScript() {
+  // Your code to execute on the page goes here
+  let myJsonData = findMetrics();
+  generateTable(myJsonData)
+}
   

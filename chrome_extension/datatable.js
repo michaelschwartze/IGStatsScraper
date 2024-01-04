@@ -31,7 +31,7 @@ function generateTable(jsonData){
     }
    
     let htmlStringEnd = `</table><div style="display: flex; justify-content: center; padding-top: 30px; padding-bottom: 10px;">
-                            <button style="background: rgb(0, 149, 246); padding-left: 20px;
+                            <button id="copy-table" style="background: rgb(0, 149, 246); padding-left: 20px;
                             padding-right: 20px;
                             padding-bottom: 5px;
                             padding-top: 5px;
@@ -53,6 +53,10 @@ function generateTable(jsonData){
     
     // Display Modal
     document.getElementById('myModal').style.display = 'block';
+
+    // Add button listener
+    document.getElementById('copy-table').addEventListener('click', copyTableToClipboard('reelsInsights'));
+
 }
 
 

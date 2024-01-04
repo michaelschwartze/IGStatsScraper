@@ -20,7 +20,8 @@
       ],
       "js": [
         "content.js",
-        "datatable.js"
+        "datatable.js",
+        "dataexport.js"
       ]
     }
   ],
