@@ -32,6 +32,13 @@ function convertTimeToSeconds(timeStr) {
   
     return totalSeconds;
   }
+
+  function arrayToObj(arr) {
+    return arr.reduce((obj, [key, value]) => {
+        obj[key] = value;
+        return obj;
+    }, {});
+  }
   
   function findMetrics() {
     const metrics = [];
@@ -106,22 +113,11 @@ function convertTimeToSeconds(timeStr) {
     // Add the Reel URL to the array
     metrics.push(["Reel URL", window.location.href ])
 
-    function arrayToObj(arr) {
-      return arr.reduce((obj, [key, value]) => {
-        obj[key] = value;
-        return obj;
-      }, {});
-      
-    }
+    let jsonDataObject = arrayToObj(metrics);
 
-    const resultString = arrayToObj(metrics);
+    //return metrics.length > 0 ? metrics : "Metrics not found.";
 
-    console.log(resultString);
-
-    return metrics.length > 0 ? metrics : "Metrics not found.";
-
-
-
+    return jsonDataObject
 
   }
   

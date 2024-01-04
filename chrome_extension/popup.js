@@ -9,7 +9,7 @@ document.getElementById('execute-script').addEventListener('click', async () => 
   
   function pageScript() {
     // Your code to execute on the page goes here
-    let jsonData = findMetrics();
-    generateTable(jsonData)
+    let myJsonData = findMetrics();
+    generateTable(myJsonData)
   }
   
