@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Your Extension Name",
+  "name": "IG Reel Insight Scraper",
   "version": "1.0",
+  "description": "A simple tool for copying your Instagram Reels insights to a table so it will paste easily into a spreadsheet" ,
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icon16.png"
+      "128": "icon128.png"
     }
   },
   "permissions": [
@@ -24,6 +25,6 @@
     }
   ],
   "icons": {
-    "16": "icon16.png"
+    "128": "icon128.png"
   }
 }
