@@ -14,7 +14,7 @@ function generateTable(jsonData){
     <div id="myModal" style="display:none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); padding-top: 60px;">
         <div style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 400px;">
             <span id="closeModal" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
-            <p>Reel Insights Table</p>
+            <p style="text-align: center;">Reel Insights Table</p>
             <table id="reelsInsights" style='border: none;'>`;
 
     function htmlStringMiddle(jsonData) {
@@ -30,7 +30,15 @@ function generateTable(jsonData){
         return html;
     }
    
-    let htmlStringEnd = `</table></div></div>`;
+    let htmlStringEnd = `</table><div style="display: flex; justify-content: center; padding-top: 30px; padding-bottom: 10px;">
+                            <button style="background: rgb(0, 149, 246); padding-left: 20px;
+                            padding-right: 20px;
+                            padding-bottom: 5px;
+                            padding-top: 5px;
+                            border: none;
+                            color: white;
+                            border-radius: 5px;">Copy</button>
+                        </div></div></div>`;
     
     function modalHTML() {
         return htmlStringBeginning + htmlStringMiddle(jsonData) + htmlStringEnd;
