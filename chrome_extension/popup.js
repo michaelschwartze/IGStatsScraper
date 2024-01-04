@@ -9,6 +9,7 @@ document.getElementById('execute-script').addEventListener('click', async () => 
   
   function pageScript() {
     // Your code to execute on the page goes here
-    console.log(findMetrics());
+    let jsonData = findMetrics();
+    generateTable(jsonData)
   }
   
