@@ -55,8 +55,10 @@ function generateTable(jsonData){
     document.getElementById('myModal').style.display = 'block';
 
     // Add button listener
-    document.getElementById('copy-table').addEventListener('click', copyTableToClipboard('reelsInsights'));
-
+    document.getElementById('copy-table').addEventListener('click', function() {
+        copyTableToClipboard('reelsInsights');
+    });
+    
 }
 
 
