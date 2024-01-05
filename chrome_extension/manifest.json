@@ -10,7 +10,9 @@
     }
   },
   "permissions": [
-    "scripting", "activeTab"
+    "scripting", 
+    "activeTab",
+    "tabs"
   ],
   "content_scripts": [
     {
@@ -21,7 +23,8 @@
       "js": [
         "content.js",
         "datatable.js",
-        "dataexport.js"
+        "dataexport.js",
+        "background.js"
       ]
     }
   ],
