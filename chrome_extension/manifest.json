@@ -24,7 +24,8 @@
         "content.js",
         "datatable.js",
         "dataexport.js",
-        "background.js"
+        "background.js",
+        "profileLoader.js"
       ]
     }
   ],
