@@ -1,3 +1,14 @@
+// **************************
+// SETUP
+
+var reelsArray = []; // create an empty array for the Reels Objects
+
+var additionalReels = 0;
+
+// **************************
+// INITIAL REELS LOADER
+// from the initial page load, grabs the displayed reels and adds them to the Reels Array
+
 function getInitialReelsIndex(){
     var initialReelsArray = [];                      // create return object
     document.querySelectorAll("._abq3._al5p").forEach(div => {
@@ -32,6 +43,10 @@ function createReelObjectFromDiv(div){
     return reelObj
 }
 
+// **************************
+// DIV APPEND OBSERVER & AUTO SCROLLER 
+// automatically scrolls the webpage to trigger calls to the IG server that return more reels and append them to the document
+
 function observeDivAppends() {
     // Define the classes to look for
     const targetClasses = ['_ac7v', '_al5r'];
@@ -45,12 +60,21 @@ function observeDivAppends() {
                     if (node.nodeName === 'DIV' && targetClasses.every(cls => node.classList.contains(cls))) {
                         const childDivs = node.querySelectorAll("._abq3._al5p");
                         let divs = Array.from(childDivs);
-                        console.log(divs);
-                        // TODO
-                            // For each element in the divs array 
-                                // Create Reel Object using the createReelObjectFromDiv function 
-                                // Check if it exists in the Reels Array by it's ID attribute using the containsObjectWithUniqueProperty function
-                                // If it doesn't exist, add it to the reelsArray
+
+                        divs.forEach(div => {
+                            let href = div.querySelector("a").getAttribute("href"); 
+                            let reelId = extractReelId(href);
+                            if (containsID(reelsArray, reelId)){
+                                console.log("don't add " + reelId);
+                            } else {
+                                console.log("add " + reelId);
+                            }
+
+                            // TODO using the reelId, check if the reel exists in the reelsArray
+                                // If it doesn't, create a reelObject from the div and add it to the reels Array
+                                // otherwise do nothing
+
+                        });
                     }
                 });
             }
@@ -64,6 +88,35 @@ function observeDivAppends() {
     observer.observe(document.body, config);
 }
 
+const scrollSpeed = 100; // Replace X with your desired scrolling speed in pixels per second
+
+function scrollPage() {
+  const scrollDistance = scrollSpeed * 0.05; // Calculate scroll distance for a 50ms interval
+  window.scrollBy(0, scrollDistance); // Scroll by the calculated distance
+  requestAnimationFrame(scrollPage); // Request the next animation frame
+}
+
+// TODO: finish this v
+// observe scroll speed to stop scrolling 
+
+let observedScrollSpeed = 0;
+let scrollCount = 0;
+
+function calculateScrollSpeed() {
+  const scrollTop = window.scrollY;
+  setTimeout(() => {
+    const newScrollTop = window.scrollY;
+    const scrollDistance = Math.abs(newScrollTop - scrollTop);
+    const timeElapsed = 5 * 1000; // 5 seconds in milliseconds
+    const speed = scrollDistance / timeElapsed; // Calculate speed in pixels per millisecond
+    observedScrollSpeed = speed * 1000; // Convert to pixels per second
+    scrollCount++;
+    console.log(`Average Scroll Speed (last 5 seconds): ${observedScrollSpeed.toFixed(2)} pixels/second`);
+    calculateScrollSpeed(); // Recursively call the function every 5 seconds
+  }, 5000); // Wait for 5 seconds before calculating again
+}
+
+// **************************
 
 
 // printPublicReelsStatsTable
@@ -108,6 +161,10 @@ function extractReelId(url){
     return match ? match[1] : null;
 }
 
+function containsID(array, id) {
+    return array.some(item => item.ID === id);
+}
+
 function containsObjectWithUniqueProperty(targetArray, myObject, myProperty) {
     // Check if the object has myProperty
     if (myObject.hasOwnProperty(myProperty)) {
@@ -122,11 +179,12 @@ function containsObjectWithUniqueProperty(targetArray, myObject, myProperty) {
     }
 }
 
-// Run the full process
-function grabStats(){
-    var reelsArray = [];                                        // Create an empty reels array
-    console.log(reelsArray)
-    var initialReelsArray = getInitialReelsIndex();             // get the reels that show up on page load
-    Array.prototype.push.apply(reelsArray, initialReelsArray);  // Add the initial reels to the reels array
-    observeDivAppends()                                         // start the div append observer
-}
+// **************************
+// RUN THE PROCESS
+
+var initialReelsArray = getInitialReelsIndex();             // get the reels that show up on page load
+Array.prototype.push.apply(reelsArray, initialReelsArray);  // Add the initial reels to the reels array
+observeDivAppends()                                         // start the div append observer
+scrollPage()
+
+// **************************
