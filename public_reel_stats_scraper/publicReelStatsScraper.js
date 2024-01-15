@@ -67,7 +67,8 @@ function observeDivAppends() {
                             if (containsID(reelsArray, reelId)){
                                 console.log("don't add " + reelId);
                             } else {
-                                console.log("add " + reelId);
+                                let reelObj = createReelObjectFromDiv(div);
+                                reelsArray.push(reelObj);     
                             }
 
                             // TODO using the reelId, check if the reel exists in the reelsArray
@@ -88,7 +89,7 @@ function observeDivAppends() {
     observer.observe(document.body, config);
 }
 
-const scrollSpeed = 100; // Replace X with your desired scrolling speed in pixels per second
+const scrollSpeed = 125; // Replace X with your desired scrolling speed in pixels per second
 
 function scrollPage() {
   const scrollDistance = scrollSpeed * 0.05; // Calculate scroll distance for a 50ms interval
