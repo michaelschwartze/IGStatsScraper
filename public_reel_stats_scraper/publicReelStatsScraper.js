@@ -36,7 +36,7 @@ function createReelObjectFromDiv(div){
         
     // Add extracted information to the reel object
     reelObj['ID'] = reelID;
-    reelObj['Link'] = 'instagram.com' + href;
+    reelObj['Reel URL'] = 'instagram.com' + href;
     reelObj['Thumbnail'] = '=image("' + imageUrl + '")';
     reelObj['Plays'] = playsNumeric;
 
@@ -97,7 +97,7 @@ function scrollPage() {
   requestAnimationFrame(scrollPage); // Request the next animation frame
 }
 
-// TODO: finish this v
+// TODO: finish the stop scrolling function
 // observe scroll speed to stop scrolling 
 
 let observedScrollSpeed = 0;
