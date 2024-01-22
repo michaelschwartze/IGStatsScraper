@@ -43,26 +43,6 @@ function stopInsightsModalListener() {
     }
 }
 
-function openInsightsModal() {
-    startInsightsModalListener();
-    viewInsightsButton.click();
-
-    let checkModalOpenInterval = setInterval(function() {
-        if (insightsModalOpen) {
-            clearInterval(checkModalOpenInterval);
-            stopInsightsModalListener();
-            console.log("Insights Modal is now open.");
-            findMetrics();
-        }
-    }, 100);
-}
-
-
-
-// TODO: Wait for the insights modal to be loaded
-// ***** PART 1 > END
-
-// ***** PART 2 > START
 // Scrape the insights (this code is pulled from the original /chrome_extension/content.js script )
 // Helpers
 function convertTimeToSeconds(timeStr) {
@@ -182,25 +162,40 @@ function findMetrics() {
 
 }
 
-
-// ***** PART 2 > END
-
-// ***** PART 3 > START
-// Identify the close insights modal button
-let buttons = document.querySelectorAll('button._abl-');
-let insightsModalCloseButton = Array.from(buttons).find(button => {
+function closeInsightsModal(buttons){
+  // Identify the close insights modal button
+  let insightsModalCloseButton = Array.from(buttons).find(button => {
     return button.querySelector('svg[aria-label="Close"]');
-});
+  });
+  insightsModalCloseButton.click(); // Close the insights modal
+}
 
-// Close the insights modal
-insightsModalCloseButton.click();
-
-// Identify the carousel next button
-let carouselNextButton = Array.from(buttons).find(button => {
+function navigateToNextReel(){
+  // Identify the carousel next button
+  let carouselNextButton = Array.from(buttons).find(button => {
     return button.querySelector('svg[aria-label="Next"]');
-});
+  });
 
-// Navigate to the next reel by clicking the carousel next button
-carouselNextButton.click();
-// ***** PART 3 > END
+  carouselNextButton.click();
+}
 
+
+function runStatsGetter(){
+  startInsightsModalListener();
+  viewInsightsButton.click();
+
+  let checkModalOpenInterval = setInterval(function() {
+      if (insightsModalOpen) {
+          clearInterval(checkModalOpenInterval);
+          stopInsightsModalListener();
+          findMetrics();
+          let buttons = document.querySelectorAll('button._abl-');
+          closeInsightsModal(buttons);
+          navigateToNextReel(buttons);
+      }
+  }, 100);
+
+  // TODO: reset everything
+};
+
+runStatsGetter()
