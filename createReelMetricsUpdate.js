@@ -79,50 +79,41 @@ function createReelMetricsUpdate() {
         },
     ];
 
-    const metrics = [];
-    const labels = ["Plays", "Watch time", "Average watch time", "Accounts reached", "Initial plays", "Replays", "Likes", "Comments", "Shares", "Saves"];
-    
     // div that contains all the metrics
     const flexboxDivs = Array.from(document.querySelectorAll('div[data-bloks-name="bk.components.Flexbox"]'));
     const reachDiv = flexboxDivs.find(div => div.textContent.includes('Reach'));
 
-    // get follower_accounts_reached_count, non_follower_accounts_reached_count
-    if (reachDiv) {
-        // Extract values for Followers and Non-followers
-        const followersValue = reachDiv.querySelector('div[aria-label*="Followers"] span[data-bloks-name="bk.components.Text"]');
-        const nonFollowersValue = reachDiv.querySelector('div[aria-label*="Non-followers"] span[data-bloks-name="bk.components.Text"]');
-    
-        if (followersValue) {
-          metrics.push(["Followers", parseInt(followersValue.textContent.replace(/,/g, '').trim())]);
-        }
-    
-        if (nonFollowersValue) {
-          metrics.push(["Non-followers", parseInt(nonFollowersValue.textContent.replace(/,/g, '').trim())]);
-        }
-    }
-    
+    // Process reach metrics
+    processReachMetrics(reachDiv, metricsData);
+
     // get: 
     //  initial_plays_count, replays_count, watch_time_in_seconds, average_watch_time_in_seconds, likes_count,
     //  comments_count, shares_count, saves_count
-    for (let label of labels) {
+    for (let metric of metricsData) {
         for (let div of flexboxDivs) {
-          const labelSpan = div.querySelector(`span[aria-label="${label}"]`);
-          if (labelSpan) {
-            const valueDiv = labelSpan.closest('div[data-bloks-name="bk.components.Flexbox"]').nextElementSibling;
-            const valueSpan = valueDiv ? valueDiv.querySelector('span[data-bloks-name="bk.components.Text"]') : null;
-            if (valueSpan) {
-              let value = valueSpan.textContent.replace(/,/g, '').trim();
-              if (label === "Watch time" || label === "Average watch time") {
-                value = convertTimeToSeconds(value);
-              } else {
-                value = parseInt(value);
-              }
-              metrics.push([label, value]);
-              break;
+            const labelSpan = div.querySelector(`span[aria-label="${metric.scraping_label}"]`);
+            if (labelSpan) {
+                const valueDiv = labelSpan.closest('div[data-bloks-name="bk.components.Flexbox"]').nextElementSibling;
+                const valueSpan = valueDiv ? valueDiv.querySelector('span[data-bloks-name="bk.components.Text"]') : null;
+                if (valueSpan) {
+                    let value = valueSpan.textContent.replace(/,/g, '').trim();
+                    if (metric.scraping_label === "Watch time" || metric.scraping_label === "Average watch time") {
+                        value = convertTimeToSeconds(value);
+                    } else {
+                        value = parseInt(value);
+                    }
+                    metric.updated_value = value;
+                    break;
+                }
             }
-          }
         }
     }
+
+    // Populate update_collection
+    reel_metrics_update.metric_update.update_collection = metricsData.reduce((acc, metric) => {
+        acc[metric.output_label] = metric.updated_value;
+        return acc;
+    }, {});
 
     // time helper function
     function convertTimeToSeconds(timeStr) {
@@ -153,9 +144,27 @@ function createReelMetricsUpdate() {
         return totalSeconds;
     }
 
-    
+
 
     // return the JSON object
-    return reel_metrics_update
+    return reel_metrics_update;
 
+}
+
+function processReachMetrics(reachDiv, metricsData) {
+    if (reachDiv) {
+        const followersMetric = metricsData.find(m => m.scraping_label === "Followers");
+        const nonFollowersMetric = metricsData.find(m => m.scraping_label === "Non-followers");
+
+        const followersValue = reachDiv.querySelector('div[aria-label*="Followers"] span[data-bloks-name="bk.components.Text"]');
+        const nonFollowersValue = reachDiv.querySelector('div[aria-label*="Non-followers"] span[data-bloks-name="bk.components.Text"]');
+
+        if (followersValue && followersMetric) {
+            followersMetric.updated_value = parseInt(followersValue.textContent.replace(/,/g, '').trim());
+        }
+
+        if (nonFollowersValue && nonFollowersMetric) {
+            nonFollowersMetric.updated_value = parseInt(nonFollowersValue.textContent.replace(/,/g, '').trim());
+        }
+    }
 }
