@@ -168,3 +168,35 @@ function processReachMetrics(reachDiv, metricsData) {
         }
     }
 }
+
+async function sendMetricsData(metricsUpdate) {
+    const url = 'http://right-awfully-midge.ngrok-free.app/api/update_metrics'; // Replace with your API endpoint
+    const serializedData = JSON.stringify(metricsUpdate);
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: serializedData
+        });
+
+        if (response.ok) {
+            const jsonResponse = await response.json();
+            console.log('Success:', jsonResponse);
+            // Additional success handling
+        } else {
+            console.error('HTTP Error:', response.status);
+            // Additional error handling
+        }
+    } catch (error) {
+        console.error('Fetch Error:', error);
+        // Additional error handling
+    }
+}
+
+// Call this function with your JSON object
+reel_metrics_update = createReelMetricsUpdate();
+
+sendMetricsData(reel_metrics_update);
