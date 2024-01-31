@@ -1,35 +1,30 @@
 {
   "manifest_version": 3,
-  "name": "IG Reel Insight Scraper",
-  "version": "1.0",
-  "description": "A simple tool for copying your Instagram Reels insights to a table so it will paste easily into a spreadsheet" ,
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "128": "icon128.png"
-    }
-  },
+  "name": "IG Stats Scraper",
+  "version": "2.0",
+  "description": "A tool for sending Instagram data to the Make Better Video application" ,
   "permissions": [
-    "scripting", 
     "activeTab",
-    "tabs"
+    "storage"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches": [
-        "*://*.instagram.com/reel/*",
-        "*://*.instagram.com/p/*"
+        "*://*.instagram.com/*"
       ],
       "js": [
-        "content.js",
-        "datatable.js",
-        "dataexport.js",
-        "background.js",
-        "profileLoader.js"
+        "contentScript.js"
       ]
     }
   ],
+  "action": {
+    "default_icon": "icon48.png",
+    "default_popup": "popup.html"
+  },
   "icons": {
-    "128": "icon128.png"
+    "48": "icon48.png"
   }
 }
