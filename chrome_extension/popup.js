@@ -1,15 +1,5 @@
-document.getElementById('execute-script').addEventListener('click', async () => {
-    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      function: pageScript,
+document.getElementById('scrapeButton').addEventListener('click', function() {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: "scrapeData" });
     });
-  });
-  
-function pageScript() {
-  // Your code to execute on the page goes here
-  let myJsonData = findMetrics();
-  generateTable(myJsonData)
-}
-  
+});
