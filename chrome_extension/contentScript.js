@@ -4,24 +4,28 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     // Send scraped data to background script
     chrome.runtime.sendMessage({ type: "dataScraped", data: reelMetricsUpdate });
   } else if (request.action == "addReel") {
-    const newReel = createNewReel();
+    const accountName = request.accountName;
+    const newReel = createNewReel(accountName);
 
-    console.log(newReel)
+    chrome.runtime.sendMessage({ type: "newReelCreated", data: newReel });
   }
   
 });
 
-function createNewReel() {
+function createNewReel(accountName) {
     new_reel = {
+      "reel": {
+        "instagram_username": accountName,
         "post_date": null,
         "duration_in_seconds": null,
         "instagram_id": null
+      }
     }
     
-    // get instagram id and add to object
+    // get instagram reel id and add to object
     var reelUrl = window.location.href;
     var instagramId = reelUrl.endsWith('/') ? reelUrl.slice(0, -1).split('/').pop() : reelUrl.split('/').pop();
-    new_reel.instagram_id = instagramId;
+    new_reel.reel.instagram_id = instagramId;
 
     // scrape post date and add to object
     const allTextSpans = document.querySelectorAll('span[data-bloks-name="bk.components.Text"]');
@@ -31,7 +35,7 @@ function createNewReel() {
         let searchString = " · Duration";
         let index = durationText.indexOf(searchString);
         let dateString = durationText.substring(0,index);
-        new_reel.post_date = dateString;
+        new_reel.reel.post_date = standardizeDate(dateString);
         break;
         }
     }
@@ -43,7 +47,7 @@ function createNewReel() {
           const durationMatch = durationText.match(/Duration\s*(\d+:\d+)/);
           if (durationMatch && durationMatch[1]) {
             const duration = convertTimeToSeconds(durationMatch[1]);
-            new_reel.duration_in_seconds = duration;
+            new_reel.reel.duration_in_seconds = duration;
             break;
           }
         }
@@ -255,3 +259,26 @@ function processReachMetrics(reachDiv, metricsData) {
   }
 }
 
+function standardizeDate(input) {
+  // Current date for reference
+  const currentDate = new Date();
+  
+  // Check for relative dates like "2 days ago"
+  if (input.includes("days ago")) {
+    const daysAgo = parseInt(input.split(" ")[0], 10);
+    const targetDate = new Date(currentDate.setDate(currentDate.getDate() - daysAgo));
+    return targetDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  } else {
+    // Attempt to parse the date assuming the current year if no year is provided
+    const yearIncluded = input.split(',').length > 1;
+    const year = yearIncluded ? '' : `, ${currentDate.getFullYear()}`;
+    const dateString = input + year;
+    
+    const parsedDate = new Date(dateString);
+    if (!isNaN(parsedDate)) { // Checks if parsedDate is a valid date
+      return parsedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    } else {
+      throw new Error('Invalid date format');
+    }
+  }
+}
