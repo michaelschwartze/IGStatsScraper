@@ -1,10 +1,58 @@
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action === "scrapeData") {
-      const reelMetricsUpdate = createReelMetricsUpdate();
-      // Send scraped data to background script
-      chrome.runtime.sendMessage({ type: "dataScraped", data: reelMetricsUpdate });
+    const reelMetricsUpdate = createReelMetricsUpdate();
+    // Send scraped data to background script
+    chrome.runtime.sendMessage({ type: "dataScraped", data: reelMetricsUpdate });
+  } else if (request.action == "addReel") {
+    const newReel = createNewReel();
+
+    console.log(newReel)
   }
+  
 });
+
+function createNewReel() {
+    new_reel = {
+        "post_date": null,
+        "duration_in_seconds": null,
+        "instagram_id": null
+    }
+    
+    // get instagram id and add to object
+    var reelUrl = window.location.href;
+    var instagramId = reelUrl.endsWith('/') ? reelUrl.slice(0, -1).split('/').pop() : reelUrl.split('/').pop();
+    new_reel.instagram_id = instagramId;
+
+    // scrape post date and add to object
+    const allTextSpans = document.querySelectorAll('span[data-bloks-name="bk.components.Text"]');
+    for (let span of allTextSpans) {
+        if (span.textContent.includes("Duration")) {
+        const durationText = span.textContent;
+        let searchString = " · Duration";
+        let index = durationText.indexOf(searchString);
+        let dateString = durationText.substring(0,index);
+        new_reel.post_date = dateString;
+        break;
+        }
+    }
+
+    // scrape duration and add to object
+    for (let span of allTextSpans) {
+        if (span.textContent.includes("Duration")) {
+          const durationText = span.textContent;
+          const durationMatch = durationText.match(/Duration\s*(\d+:\d+)/);
+          if (durationMatch && durationMatch[1]) {
+            const duration = convertTimeToSeconds(durationMatch[1]);
+            new_reel.duration_in_seconds = duration;
+            break;
+          }
+        }
+      }
+
+    // return object
+    return new_reel;
+
+}
 
 function createReelMetricsUpdate() {
   reel_metrics_update = {
@@ -158,6 +206,36 @@ function createReelMetricsUpdate() {
   return reel_metrics_update;
 
 }
+
+function convertTimeToSeconds(timeStr) {
+    // First, try parsing as "M:SS" format
+    const minSecMatch = timeStr.match(/(\d+):(\d+)/);
+    if (minSecMatch) {
+      return parseInt(minSecMatch[1]) * 60 + parseInt(minSecMatch[2]);
+    }
+  
+    // Fallback to the original parsing method
+    const timeParts = timeStr.match(/(\d+)\s*hr|(\d+)\s*min|(\d+)\s*sec/g);
+    let totalSeconds = 0;
+  
+    if (timeParts) {
+      timeParts.forEach(part => {
+        const value = parseInt(part);
+  
+        if (part.includes('hr')) {
+          totalSeconds += value * 3600;
+        } else if (part.includes('min')) {
+          totalSeconds += value * 60;
+        } else if (part.includes('sec')) {
+          totalSeconds += value;
+        }
+      });
+    }
+  
+    return totalSeconds;
+}
+
+
 
 function processReachMetrics(reachDiv, metricsData) {
   if (reachDiv) {
